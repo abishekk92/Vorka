@@ -2,7 +2,7 @@
 require 'json'
 companies_json=IO.read "company_grouped.json"
 companies=JSON.parse(companies_json)
-puts "Wrong usage ruby -rubygems markov.rb <category> <length> <number of name>" and exit if ARGV.length<3
+puts "Wrong usage ruby -rubygems vorka.rb <category> <length> <number of name>" and exit if ARGV.length<3
 vertical=ARGV[0]
 length=ARGV[1].to_i
 num_name=ARGV[2].to_i 
