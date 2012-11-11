@@ -27,7 +27,7 @@ end
 %w[web ecommerce software education mobile enterprise hardware].each do |category|
   companies_group[category].each{|company| puts sanitize_name(company["name"])}
 end 
-#File.open("company_grouped.json",'w'){|f| f.write(companies_group.to_json)}
+File.open("company_grouped.json",'w'){|f| f.write(companies_group.to_json)}
 
 
   
