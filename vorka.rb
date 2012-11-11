@@ -1,10 +1,11 @@
-#usage ruby -rubygems markov.rb <category>
+#usage ruby -rubygems markov.rb <category> <length> <number of names>
 require 'json'
 companies_json=IO.read "company_grouped.json"
 companies=JSON.parse(companies_json)
-vertical=ARGV[0]
-length=ARGV[1].to_i
-num_name=ARGV[2].to_i
+puts "Wrong usage ruby -rubygemsa markiov.rb <category> <length> <number of name>" and exit if ARGV.length<3
+vertical=ARGV[0] || %w[mobile web ecommerce software hardware enterprise education].choice
+length=ARGV[1].to_i || 5
+num_name=ARGV[2].to_i || 1
 chain={}
 companies[vertical].each do |company|
 	letters=company.downcase.split(//)
