@@ -1,4 +1,4 @@
-#usage ruby -rubygems markov.rb <category> <length> <number of names>
+#usage ruby -rubygems vorka.rb <category> <length> <number of names>
 require 'json'
 companies_json=IO.read "company_grouped.json"
 companies=JSON.parse(companies_json)
