@@ -20,7 +20,7 @@ def generate(length,chain)
 		result.push item
         	items=chain[item]
 	end
-	return result.join.capitalize 
+	result.join.capitalize 
 end
 num_name.times{|i| puts generate(length,chain)}
 

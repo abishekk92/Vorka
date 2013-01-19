@@ -21,8 +21,7 @@ companies_group=companies.group_by do |company|
 end
 def sanitize_name(name)
 	name=name.split " "
-	name=name.first.gsub(%r(\..*),"")
-	return name
+	name.first.gsub(%r(\..*),"")
 end 
 %w[web ecommerce software education mobile enterprise hardware].each do |category|
   companies_group[category].each{|company| puts sanitize_name(company["name"])}
