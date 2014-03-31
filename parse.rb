@@ -17,21 +17,20 @@ companies_group=companies.group_by do |company|
 		"hardware"
 	when /enterprise/
 		"enterprise"
+    else
+        "other"
 	end
 end
+
 def sanitize_name(name)
 	name=name.split " "
 	name.first.gsub(%r(\..*),"")
 end 
-%w[web ecommerce software education mobile enterprise hardware].each do |category|
-  companies_group[category].each{|company| puts sanitize_name(company["name"])}
-end 
+
+%w[web ecommerce software education mobile enterprise hardware other].each do |category|
+  companies_group[category] = companies_group[category].map do |company|
+      sanitize_name(company["name"])
+    end
+end
+
 File.open("company_grouped.json",'w'){|f| f.write(companies_group.to_json)}
-
-
-  
-
-
-
- 
-
