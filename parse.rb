@@ -1,6 +1,8 @@
 require 'json'
+
 json=IO.read "companies.json"
 companies=JSON.parse(json)
+
 companies_group=companies.group_by do |company|
 	case company["category_code"]
 	when /web/
