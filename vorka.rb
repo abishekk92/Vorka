@@ -16,7 +16,7 @@ def generate(length,chain)
 	items=chain.keys
 	result=[]
 	while !items.empty? and result.length < length 
-		item=items.choice
+		item = items.sample
 		result.push item
         	items=chain[item]
 	end
@@ -24,3 +24,4 @@ def generate(length,chain)
 end
 num_name.times{|i| puts generate(length,chain)}
 
+Encoding.default_external = Encoding::UTF_8
