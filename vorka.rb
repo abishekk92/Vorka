@@ -1,61 +1,60 @@
 #usage ruby -rubygems vorka.rb <category> <length> <number of names>
 require 'json'
+require_relative 'utils'
 
-def extract_letters(_string)
-    _string.gsub(/[^A-Za-z]/, '').downcase.split //
-end
-
-def frequency(word)
-  Hash[extract_letters(word).group_by(&:chr).map { |k, v| [k, v.size] }]
-end
-
-def chain(companies, vertical)
-    chain = {}
-    local_model = {}
-    companies[vertical].each do |company|
-        letters = extract_letters company
-        letters.each do |letter|
-            chain[letter]||= []
-            local_model[letter]||= {}
+module Vorka
+    def chain(companies, vertical)
+        chain = {}
+        local_model = {}
+        companies[vertical].each do |company|
+            letters = extract_letters company
+            letters.each do |letter|
+                chain[letter]||= []
+                local_model[letter]||= {}
+            end
+        begin
+            letters[0..-2].zip(letters[1..-1]).each do |key,value|
+                chain[key].push(value)
+                local_model[key][value]||=0
+                local_model[key][value]+=1
+            end
+        rescue
+            puts letters
         end
-    begin
-        letters[0..-2].zip(letters[1..-1]).each do |key,value|
-            chain[key].push(value)
-            local_model[key][value]||=0
-            local_model[key][value]+=1
-        end
-    rescue
-        puts letters
     end
-end
-    return chain, local_model
-end
+        return chain, local_model
+    end
 
-def generate(length, chain)
-	items = chain.keys
-	result = []
-	while !items.empty? and result.length < length 
-		item = items.sample
-		result.push item
-        items = chain[item]
-	end
-	result.join.capitalize 
-end
 
-def probability_model(frequencies)
-    total = frequencies.values.reduce(:+)
-    Hash[frequencies.map {|letter, count| [letter, count.to_f/total]}]
-end
+    class NameGenerator
+        
+        attr_accessor :chain
 
-def quartiles_2_3(probabilities)
-    values = probabilities.values.sort
-    opt_group_size = values.size/3
-    (values[opt_group_size*2]...values[opt_group_size*3])
-end
+        def generate(length)
+            items = self.chain.keys
+            result = []
+            while !items.empty? and result.length < length
+                item = items.sample
+                result.push item
+                items = self.chain[item]
+            end
+            result.join.capitalize
+        end
+    end
 
-def score(word, probabilities, quartile_vals)
-    in_range = extract_letters(word).select{ |letter| quartile_vals.include? probabilities[letter] }.size
-    in_range.to_f/word.size
+    class FitnessValidator
+        attr_accessor :probabilities, :quartiles_2_3
+        
+        def fitness(word)
+            in_range = extract_letters(word).select{ |letter| self.quartiles_2_3.include? self.probabilities[letter] }.size
+            in_range.to_f/word.size
+        end
+
+        def self.is_fit?(fitness_score)
+            fitness_score > 0.5
+        end
+
+    end
 end
 
 Encoding.default_external = Encoding::UTF_8
@@ -73,17 +72,21 @@ vertical = ARGV[0]
 length = ARGV[1].to_i
 num_name = ARGV[2].to_i
 
-chain, local_model = chain companies, vertical
-frequencies = frequency companies[vertical].join ""
-probabilities = probability_model frequencies
-quartile_vals = quartiles_2_3 probabilities
+include Vorka
+name_generator = Vorka::NameGenerator.new()
+name_generator.chain, _ = Vorka::chain companies, vertical
+
+validator = Vorka::FitnessValidator.new()
+validator.probabilities = probability_model frequency companies[vertical].join ""
+validator.quartiles_2_3 = quartiles_2_3 validator.probabilities
 
 so_far = 0
 
 until so_far == num_name
-    word = generate(length, chain)
-    score_val = score word, probabilities, quartile_vals
-    if score_val > 0.5
+    word = name_generator.generate(length)
+
+    score = validator.fitness word
+    if Vorka::FitnessValidator.is_fit? score
         puts word
         so_far += 1
     end
