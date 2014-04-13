@@ -6,7 +6,7 @@ companies_json = IO.read "company_grouped.json"
 companies = JSON.parse(companies_json)
 
 if ARGV.length < 3
- puts "Wrong usage ruby vorka.rb <category> <length> <number of name>"
+ puts "Wrong usage ruby vorka_cli.rb <category> <length> <number of name>"
  exit
 end
 
