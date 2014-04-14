@@ -1,0 +1,63 @@
+#! /usr/bin/ruby
+
+require_relative 'vorka'
+
+Encoding.default_external = Encoding::UTF_8
+
+companies_json = IO.read "company_grouped.json"
+companies = JSON.parse(companies_json)
+
+HELP_TEXT = ["Usage", "./vorka_cli [OPTIONS]", 
+             "--help Displays this help text", 
+             "list Provides the list of categories available", 
+             "<category-name> <length> <number-of-names>"].join "\n\t"
+
+ERROR_MESSAGE = "Wrong number of arguments. Use ./vorka_cli --help for the list of supported commands"
+
+CATEGORIES = companies.keys
+
+if ARGV.size > 1
+    if ARGV.size == 3
+        if companies.keys.include? ARGV.first
+            vertical = ARGV.first
+        else
+            puts "#{ARGV.first} is not a valid category"
+            print_and_exit "Please use ./vorka_cli --list for the list of supported categories"
+        end
+        length = ARGV[1].to_i
+        num_name = ARGV[2].to_i
+    else
+        print_and_exit ERROR_MESSAGE
+    end
+
+elsif ARGV.size == 1
+
+    case ARGV.first
+    when "--help"
+        print_and_exit HELP_TEXT
+    when "--list"
+        print_and_exit CATEGORIES.map{|i| i.capitalize}.join "\n"
+    else
+        print_and_exit ERROR_MESSAGE
+    end
+end
+
+include Vorka
+name_generator = Vorka::NameGenerator.new()
+name_generator.chain, _ = Vorka::chain companies, vertical
+
+validator = Vorka::FitnessValidator.new()
+validator.probabilities = probability_model frequency companies[vertical].join ""
+validator.quartiles_2_3 = quartiles_2_3 validator.probabilities
+
+so_far = 0
+
+until so_far == num_name
+    word = name_generator.generate(length)
+
+    score = validator.fitness word
+    if Vorka::FitnessValidator.is_fit? score
+        puts word
+        so_far += 1
+    end
+end
