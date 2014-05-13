@@ -40,6 +40,8 @@ elsif ARGV.size == 1
     else
         print_and_exit ERROR_MESSAGE
     end
+else
+    print_and_exit ERROR_MESSAGE
 end
 
 include Vorka
