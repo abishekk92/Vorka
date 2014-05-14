@@ -4,24 +4,18 @@ require_relative 'utils'
 module Vorka
     def chain(companies, vertical)
         chain = {}
-        local_model = {}
         companies[vertical].each do |company|
             letters = extract_letters company
             letters.each do |letter|
                 chain[letter]||= []
-                local_model[letter]||= {}
             end
-        begin
-            letters[0..-2].zip(letters[1..-1]).each do |key,value|
-                chain[key].push(value)
-                local_model[key][value]||=0
-                local_model[key][value]+=1
-            end
-        rescue
-            puts letters
+            unless letters.empty?
+                letters[0..-2].zip(letters[1..-1]).each do |key,value|
+                    chain[key].push(value)
+                end
         end
     end
-        return chain, local_model
+       chain
     end
 
 

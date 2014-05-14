@@ -46,7 +46,7 @@ end
 
 include Vorka
 name_generator = Vorka::NameGenerator.new()
-name_generator.chain, _ = Vorka::chain companies, vertical
+name_generator.chain = Vorka::chain companies, vertical
 
 validator = Vorka::FitnessValidator.new()
 validator.probabilities = probability_model frequency companies[vertical].join ""
