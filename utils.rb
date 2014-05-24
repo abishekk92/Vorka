@@ -21,3 +21,17 @@ def print_and_exit(message)
     puts message
     exit
 end
+
+def chain(companies)
+    chain = {}
+    companies.each do |company|
+        letters = extract_letters company
+        unless letters.empty?
+            letters[0..-2].zip(letters[1..-1]).each do |key,value|
+                chain[key] ||= []
+                chain[key].push(value)
+            end
+    end
+end
+   chain
+end

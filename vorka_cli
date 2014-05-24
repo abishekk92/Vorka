@@ -40,24 +40,8 @@ elsif ARGV.size == 1
     else
         print_and_exit ERROR_MESSAGE
     end
+else
+    print_and_exit ERROR_MESSAGE
 end
 
-include Vorka
-name_generator = Vorka::NameGenerator.new()
-name_generator.chain, _ = Vorka::chain companies, vertical
-
-validator = Vorka::FitnessValidator.new()
-validator.probabilities = probability_model frequency companies[vertical].join ""
-validator.quartiles_2_3 = quartiles_2_3 validator.probabilities
-
-so_far = 0
-
-until so_far == num_name
-    word = name_generator.generate(length)
-
-    score = validator.fitness word
-    if Vorka::FitnessValidator.is_fit? score
-        puts word
-        so_far += 1
-    end
-end
+NameGenerator.new(companies[vertical], length).generate num_name
